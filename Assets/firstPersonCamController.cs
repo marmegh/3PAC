@@ -1,5 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
 
 public class CameraController : MonoBehaviour
 {
@@ -11,12 +13,10 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         offset = transform.position - player.transform.position;
-        angle = transform.rotation - player.transform.rotation;
     }
 
     void LateUpdate()
     {
         transform.position = player.transform.position + offset;
-        transform.rotation = player.transform.rotation + angle;
     }
 }
