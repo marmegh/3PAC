@@ -13,6 +13,7 @@ public class pacmanController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        Physics.gravity = new Vector3(0, -1, 0);
         rb = GetComponent<Rigidbody>();
         count = 0;
         SetScore();
@@ -36,12 +37,41 @@ public class pacmanController : MonoBehaviour {
             count++;
             SetScore();
         }
-        //rotate the cube world
-        if (other.gameObject.CompareTag("Net"))
+        //gather fruit for additional points and to change game rules
+        if (other.gameObject.CompareTag("Fruit"))
         {
             count += 5;
             SetScore();
         }
+    }
+    void OnCollisionEnter(Collision collision)
+    {
+        //rotate the cube world
+        if (collision.collider.CompareTag("up"))
+        {
+            Physics.gravity = new Vector3(0, -10, 0);
+        }
+        if (collision.collider.CompareTag("down"))
+        {
+            Physics.gravity = new Vector3(0, 10, 0);
+        }
+        if (collision.collider.CompareTag("left"))
+        {
+            Physics.gravity = new Vector3(10, 0, 0);
+        }
+        if (collision.collider.CompareTag("right"))
+        {
+            Physics.gravity = new Vector3(-10, 0, 0);
+        }
+        if (collision.collider.CompareTag("back"))
+        {
+            Physics.gravity = new Vector3(0, 0, -10);
+        }
+        if (collision.collider.CompareTag("front"))
+        {
+            Physics.gravity = new Vector3(0, 0, 10);
+        }
+
     }
 
     void SetScore ()
