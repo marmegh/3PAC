@@ -5,16 +5,20 @@ using UnityEngine.UI;
 
 public class pacmanController : MonoBehaviour {
     public int speed;
-
+    private bool ghostbuster;
+    private int countdown;
     private Rigidbody rb;
     public Text score;
+    public Text cd;
 
     private int count;
 
 	// Use this for initialization
 	void Start () {
+        ghostbuster = false;
         Physics.gravity = new Vector3(0, -1, 0);
         rb = GetComponent<Rigidbody>();
+        countdown = 0;
         count = 0;
         SetScore();
 	}
@@ -28,6 +32,24 @@ public class pacmanController : MonoBehaviour {
 
         rb.AddForce(movement*speed);
 	}
+    void Update()
+    {
+        //countdown for ghostbuster feature
+        if(ghostbuster == true)
+        {
+            countdown--;
+            if(countdown % 5 == 0)
+            {
+                int temp = countdown / 5;
+                cd.text = "Countdown: " + temp.ToString();
+            }
+        }
+        if (countdown == 0 && ghostbuster == true)
+        {
+            ghostbuster = false;
+            cd.text = "";
+        }
+    }
     void OnTriggerEnter(Collider other)
     {
         //collect a coin
@@ -41,14 +63,17 @@ public class pacmanController : MonoBehaviour {
         if (other.gameObject.CompareTag("Fruit"))
         {
             other.gameObject.SetActive(false);
-            count += 5;
+            count += 50;
             SetScore();
         }
         //magic pill anyone?
         if (other.gameObject.CompareTag("cap"))
         {
             other.gameObject.SetActive(false);
+            ghostbuster = true;
+            countdown = 500;
             count += 5;
+            SetCountDown();
             SetScore();
         }
     }
@@ -85,5 +110,9 @@ public class pacmanController : MonoBehaviour {
     void SetScore ()
     {
         score.text = "Score: " + count.ToString();
+    }
+    void SetCountDown ()
+    {
+        cd.text = "Countdown: " + countdown.ToString();
     }
 }
