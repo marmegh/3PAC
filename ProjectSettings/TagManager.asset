@@ -12,6 +12,8 @@ TagManager:
   - back
   - left
   - right
+  - Fruit
+  - cap
   layers:
   - Default
   - TransparentFX

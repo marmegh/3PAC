@@ -40,6 +40,14 @@ public class pacmanController : MonoBehaviour {
         //gather fruit for additional points and to change game rules
         if (other.gameObject.CompareTag("Fruit"))
         {
+            other.gameObject.SetActive(false);
+            count += 5;
+            SetScore();
+        }
+        //magic pill anyone?
+        if (other.gameObject.CompareTag("cap"))
+        {
+            other.gameObject.SetActive(false);
             count += 5;
             SetScore();
         }
