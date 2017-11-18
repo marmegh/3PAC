@@ -3,42 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class pacmanController : MonoBehaviour {
+public class pacmanController : MonoBehaviour
+{
     public int speed;
     private bool ghostbuster;
     private int countdown;
     private Rigidbody rb;
     public Text score;
     public Text cd;
+    private int gravitytimer;
+    public Text winText;
+    public int level;
 
     private int count;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         ghostbuster = false;
+        level = 1;
+        winText.text = "";
         Physics.gravity = new Vector3(0, -1, 0);
         rb = GetComponent<Rigidbody>();
         countdown = 0;
+        gravitytimer = 0;
         count = 0;
         SetScore();
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate () {
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
 
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
-        rb.AddForce(movement*speed);
-	}
+        rb.AddForce(movement * speed);
+    }
     void Update()
     {
         //countdown for ghostbuster feature
-        if(ghostbuster == true)
+        if (ghostbuster == true)
         {
             countdown--;
-            if(countdown % 5 == 0)
+            if (countdown % 5 == 0)
             {
                 int temp = countdown / 5;
                 cd.text = "Countdown: " + temp.ToString();
@@ -76,6 +85,20 @@ public class pacmanController : MonoBehaviour {
             SetCountDown();
             SetScore();
         }
+        if (other.gameObject.CompareTag("tunnel"))
+        {
+            other.gameObject.SetActive(false);
+        }
+        if (level == 1 && count >= 250)
+        {
+            winText.text = "Level 1 complete! Proceed to level 2...";
+            level++;
+        }
+        if (level ==2 && count > 350)
+        {
+            winText.text = "Level 2 complete! Proceed to level 2...";
+            level++;
+        }
     }
     void OnCollisionEnter(Collision collision)
     {
@@ -88,7 +111,7 @@ public class pacmanController : MonoBehaviour {
         {
             Physics.gravity = new Vector3(0, 10, 0);
         }
-        if (collision.collider.CompareTag("left"))
+        /*if (collision.collider.CompareTag("left"))
         {
             Physics.gravity = new Vector3(10, 0, 0);
         }
@@ -103,15 +126,15 @@ public class pacmanController : MonoBehaviour {
         if (collision.collider.CompareTag("front"))
         {
             Physics.gravity = new Vector3(0, 0, 10);
-        }
+        }*/
 
     }
 
-    void SetScore ()
+    void SetScore()
     {
         score.text = "Score: " + count.ToString();
     }
-    void SetCountDown ()
+    void SetCountDown()
     {
         cd.text = "Countdown: " + countdown.ToString();
     }
