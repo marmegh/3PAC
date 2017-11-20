@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class ghostController : MonoBehaviour {
     public Rigidbody rb;
@@ -11,28 +12,56 @@ public class ghostController : MonoBehaviour {
     private Vector3 physic;
     public float delta;
     private int wait;
+    private bool redg;
+    private bool tealg;
+    private bool og;
+    private bool pinkg;
+    private bool corner;
+    private bool hunt;
+    private bool hide;
+    System.Random rand;
 
     // Use this for initialization
     void Start()
     {
+        rand = new System.Random();
         rb = GetComponent<Rigidbody>();
         start = transform.position;
         leveltimer = 0;
         DisableGravity();
         if(rb.name == "ghost red")
         {
+            hunt = false;
+            hide = false;
+            corner = true;
+            redg = true;
+            tealg = false;
+            og = false;
+            pinkg = false;
             wait = 100;
         }
         if(rb.name == "ghost teal")
         {
+            redg = false;
+            tealg = true;
+            og = false;
+            pinkg = false;
             wait = 150;
         }
         if(rb.name == "ghost pink")
         {
+            redg = false;
+            tealg = false;
+            og = false;
+            pinkg = true;
             wait = 200;
         }
         if (rb.name == "ghost orange")
         {
+            redg = false;
+            tealg = false;
+            og = true;
+            pinkg = false;
             wait = 250;
         }
     }
@@ -43,6 +72,14 @@ public class ghostController : MonoBehaviour {
         {
             transition();
             EnableGravity();
+            if(redg == true || og == true)
+            {
+                transform.position += new Vector3(1.5f, 0f, 0f);
+            }
+            else
+            {
+                transform.position += new Vector3(-1.7f, 0f, 0f);
+            }
         }
         if (leveltimer > wait)
         {
@@ -60,6 +97,10 @@ public class ghostController : MonoBehaviour {
 
             }
             physic = Physics.gravity;
+        }
+        if (leveltimer > wait + 250 && leveltimer%100 == 0)
+        {
+            omove();
         }
     }
     void transition()
@@ -93,5 +134,54 @@ public class ghostController : MonoBehaviour {
         transform.position = start;
         transform.Rotate(-180, 0, 0);
         DisableGravity();
+    }
+    public void omove()
+    {
+        int choice = rand.Next(1, 5);
+        if(choice == 1)
+        {
+            if(transform.position.z <-12.4)
+            {
+                choice = rand.Next(2, 5);
+            }
+            else
+            {
+                transform.position += Vector3.back;
+            }
+        }
+        if(choice == 2)
+        {
+            if (transform.position.z > 17)
+            {
+                choice = 1;
+            }
+            else
+            {
+                transform.position += Vector3.forward;
+            }
+            transform.position += Vector3.forward;
+        }
+        if(choice == 3)
+        {
+            if (transform.position.x < -6)
+            {
+                choice = 4;
+            }
+            else
+            {
+                transform.position += Vector3.left;
+            }
+        }
+        else
+        {
+            if (transform.position.x > 10)
+            {
+                choice = rand.Next(1, 4);
+            }
+            else
+            {
+                transform.position += Vector3.right;
+            }
+        }
     }
 }
