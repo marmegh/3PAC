@@ -11,7 +11,6 @@ public class pacmanController : MonoBehaviour
     private Rigidbody rb;
     public Text score;
     public Text cd;
-    private int gravitytimer;
     public Text winText;
     public int level;
 
@@ -26,7 +25,6 @@ public class pacmanController : MonoBehaviour
         Physics.gravity = new Vector3(0, -1, 0);
         rb = GetComponent<Rigidbody>();
         countdown = 0;
-        gravitytimer = 0;
         count = 0;
         SetScore();
     }
@@ -102,6 +100,22 @@ public class pacmanController : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
+        if(collision.gameObject.CompareTag("ghost"))
+        {
+            if(ghostbuster == true)
+            {
+                count += 100;
+                ghostController ghost = collision.gameObject.GetComponent<ghostController>();
+                ghost.reSpawn();
+                SetScore();
+            }
+            else
+            {
+                count -= 100;
+                collision.gameObject.SetActive(false);
+                SetScore();
+            }
+        }
         //rotate the cube world
         if (collision.collider.CompareTag("up"))
         {

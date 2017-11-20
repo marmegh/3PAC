@@ -15,6 +15,7 @@ TagManager:
   - Fruit
   - cap
   - tunnel
+  - ghost
   layers:
   - Default
   - TransparentFX

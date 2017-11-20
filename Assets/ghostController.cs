@@ -4,36 +4,60 @@ using UnityEngine;
 
 public class ghostController : MonoBehaviour {
     public Rigidbody rb;
+    public GameObject red;
     public GameObject player;
     public int leveltimer;
     private Vector3 start;
     private Vector3 physic;
     public float delta;
-    private Vector3 physic2;
+    private int wait;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         rb = GetComponent<Rigidbody>();
-        leveltimer = 0;
         start = transform.position;
+        leveltimer = 0;
         DisableGravity();
-        physic2 = Physics.gravity;
-        physic = physic;
-	}
+        if(rb.name == "ghost red")
+        {
+            wait = 100;
+        }
+        if(rb.name == "ghost teal")
+        {
+            wait = 150;
+        }
+        if(rb.name == "ghost pink")
+        {
+            wait = 200;
+        }
+        if (rb.name == "ghost orange")
+        {
+            wait = 250;
+        }
+    }
     private void Update()
     {
         leveltimer++;
-        if(leveltimer == 100)
+        if (leveltimer == wait)
         {
             transition();
             EnableGravity();
         }
-        if(leveltimer > 150)
+        if (leveltimer > wait)
         {
             delta = Physics.gravity.y - physic.y;
-            if(delta > 2f || delta < -2f)
+            if (delta > 2f || delta < -2f)
             {
                 transition();
+            }
+            if(red.activeInHierarchy == false)
+            {
+                transform.position = start;
+                red.SetActive(true);
+                DisableGravity();
+                leveltimer = 0;
+
             }
             physic = Physics.gravity;
         }
@@ -57,10 +81,17 @@ public class ghostController : MonoBehaviour {
         rb.isKinematic = false;
         rb.detectCollisions = true;
     }
-	// Update is called once per frame
-	void DisableGravity()
+    // Update is called once per frame
+    void DisableGravity()
     {
         rb.isKinematic = true;
         rb.detectCollisions = false;
+    }
+    public void reSpawn()
+    {
+        leveltimer = 0;
+        transform.position = start;
+        transform.Rotate(-180, 0, 0);
+        DisableGravity();
     }
 }
