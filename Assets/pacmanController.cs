@@ -13,10 +13,8 @@ public class pacmanController : MonoBehaviour
     public Text cd;
     public Text winText;
     public int level;
-    //public GameObject fps;
+
     private int count;
-    public GameObject cam;
-    public Vector3 offset;
 
     // Use this for initialization
     void Start()
@@ -29,8 +27,6 @@ public class pacmanController : MonoBehaviour
         countdown = 0;
         count = 0;
         SetScore();
-        offset = cam.transform.position - transform.position;
-        cam.transform.position = transform.position;
     }
 
     // Update is called once per frame
@@ -38,17 +34,11 @@ public class pacmanController : MonoBehaviour
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-        offset = Quaternion.AngleAxis(Input.GetAxis("Horizontal") *4.0f, Vector3.up)*offset;
-        cam.transform.position = transform.position + offset;
-        cam.transform.LookAt(transform.position);
-        var camDir = cam.transform.TransformDirection(movement);
-        rb.AddForce(camDir*speed);
-    }
 
-    //private void LateUpdate()
-    //{
-    //}
+        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
+
+        rb.AddForce(movement * speed);
+    }
     void Update()
     {
         //countdown for ghostbuster feature
