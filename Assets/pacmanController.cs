@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.Windows.Speech;
+using System.Linq;
 
 public class pacmanController : MonoBehaviour
 {
+    KeywordRecognizer keywordRecognizer;
+    Dictionary<string, System.Action> keywords = new Dictionary<string, System.Action>();
     public int speed;
     private bool ghostbuster;
     private int countdown;
@@ -17,10 +22,32 @@ public class pacmanController : MonoBehaviour
     private int count;
     public GameObject cam;
     public Vector3 offset;
+    public GameObject titlescreen;
+    private int timer;
 
     // Use this for initialization
     void Start()
     {
+        keywords.Add("up", ()=>
+        {
+            rb.transform.position += Vector3.up;
+        });
+        keywords.Add("down", () =>
+        {
+            rb.transform.position += Vector3.down;
+        });
+        keywords.Add("left", () =>
+        {
+            rb.transform.position += Vector3.left;
+        });
+        keywords.Add("right", () =>
+        {
+            rb.transform.position += Vector3.right;
+        });
+        keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
+        keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
+        keywordRecognizer.Start();
+        timer = 100;
         ghostbuster = false;
         level = 1;
         winText.text = "";
@@ -32,12 +59,22 @@ public class pacmanController : MonoBehaviour
         offset = cam.transform.position - transform.position;
         cam.transform.position = transform.position;
     }
+    private void Awake()
+    {
+        
+    }
 
     // Update is called once per frame
     void FixedUpdate()
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
+        //flip control based on gravitational pull
+        if(Physics.gravity.y > 0)
+        {
+            moveHorizontal = -Input.GetAxis("Horizontal");
+        }
+
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
         offset = Quaternion.AngleAxis(Input.GetAxis("Horizontal") *4.0f, Vector3.up)*offset;
         cam.transform.position = transform.position + offset;
@@ -51,6 +88,14 @@ public class pacmanController : MonoBehaviour
     //}
     void Update()
     {
+        while(timer > 0)
+        {
+            timer--;
+        }
+        if(timer <= 0)
+        {
+            titlescreen.SetActive(false);
+        }
         //countdown for ghostbuster feature
         if (ghostbuster == true)
         {
@@ -97,10 +142,16 @@ public class pacmanController : MonoBehaviour
         {
             other.gameObject.SetActive(false);
         }
+        if(count < 0)
+        {
+            winText.text = "Game Over";
+            StartCoroutine(Waiting());
+        }
         if (level == 1 && count >= 250)
         {
             winText.text = "Level 1 complete! Proceed to level 2...";
             level++;
+            StartCoroutine(Waiting());
         }
         if (level ==2 && count > 350)
         {
@@ -124,6 +175,22 @@ public class pacmanController : MonoBehaviour
                 count -= 100;
                 collision.gameObject.SetActive(false);
                 SetScore();
+            }
+            if (count < 0)
+            {
+                winText.text = "Game Over";
+                StartCoroutine(Waiting());
+            }
+            if (level == 1 && count >= 250)
+            {
+                winText.text = "Level 1 complete! Proceed to level 2...";
+                level++;
+                StartCoroutine(Waiting());
+            }
+            if (level == 2 && count > 350)
+            {
+                winText.text = "Level 2 complete! Proceed to level 2...";
+                level++;
             }
         }
         //rotate the cube world
@@ -153,6 +220,12 @@ public class pacmanController : MonoBehaviour
         }*/
 
     }
+    IEnumerator Waiting()
+    {
+        speed = 0;
+        yield return new WaitForSeconds(5);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
     void SetScore()
     {
@@ -161,5 +234,14 @@ public class pacmanController : MonoBehaviour
     void SetCountDown()
     {
         cd.text = "Countdown: " + countdown.ToString();
+    }
+    private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
+    {
+        System.Action keywordAction;
+        // if the keyword recognized is in our dictionary, call that Action.
+        if (keywords.TryGetValue(args.text, out keywordAction))
+        {
+            keywordAction.Invoke();
+        }
     }
 }
