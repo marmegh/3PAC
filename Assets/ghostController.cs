@@ -16,9 +16,9 @@ public class ghostController : MonoBehaviour {
     private bool tealg;
     private bool og;
     private bool pinkg;
-    private bool corner;
-    private bool hunt;
-    private bool hide;
+    //private bool corner;
+    //private bool hunt;
+    //private bool hide;
     System.Random rand;
 
     // Use this for initialization
@@ -31,9 +31,9 @@ public class ghostController : MonoBehaviour {
         DisableGravity();
         if(rb.name == "ghost red")
         {
-            hunt = false;
-            hide = false;
-            corner = true;
+            //hunt = false;
+            //hide = false;
+            //corner = true;
             redg = true;
             tealg = false;
             og = false;
