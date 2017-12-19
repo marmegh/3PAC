@@ -2,21 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using System.Linq;
 
 public class pacmanController : MonoBehaviour
 {
     public int speed;
     private bool ghostbuster;
-    public int countdown;
+    private int countdown;
     private Rigidbody rb;
     public Text score;
     public Text cd;
     public Text winText;
     public int level;
-    public GameObject titlescreen;
-    public int timer;
+    //public GameObject fps;
     private int count;
     public GameObject cam;
     public Vector3 offset;
@@ -24,7 +21,6 @@ public class pacmanController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        timer = 100;
         ghostbuster = false;
         level = 1;
         winText.text = "";
@@ -49,26 +45,27 @@ public class pacmanController : MonoBehaviour
         var camDir = cam.transform.TransformDirection(movement);
         rb.AddForce(camDir*speed);
     }
+
+    //private void LateUpdate()
+    //{
+    //}
     void Update()
     {
-        while (timer > 0)
-        {
-            timer--;
-        }
-        if (timer <= 0)
-        {
-            titlescreen.SetActive(false);
-        }
         //countdown for ghostbuster feature
         if (ghostbuster == true)
         {
             countdown--;
+            if (countdown % 5 == 0)
+            {
+                int temp = countdown / 5;
+                cd.text = "Countdown: " + temp.ToString();
+            }
         }
         if (countdown == 0 && ghostbuster == true)
         {
             ghostbuster = false;
+            cd.text = "";
         }
-        SetCountDown();
     }
     void OnTriggerEnter(Collider other)
     {
@@ -93,27 +90,19 @@ public class pacmanController : MonoBehaviour
             ghostbuster = true;
             countdown = 500;
             count += 5;
-            int temp = countdown / 5;
-            cd.text = "Count Down: " + temp.ToString();
-            SetScore();
             SetCountDown();
+            SetScore();
         }
         if (other.gameObject.CompareTag("tunnel"))
         {
             other.gameObject.SetActive(false);
         }
-        if (count < 0)
-        {
-            winText.text = "Game Over";
-            StartCoroutine(Waiting());
-        }
         if (level == 1 && count >= 250)
         {
             winText.text = "Level 1 complete! Proceed to level 2...";
             level++;
-            StartCoroutine(Waiting());
         }
-        if (level == 2 && count > 350)
+        if (level ==2 && count > 350)
         {
             winText.text = "Level 2 complete! Proceed to level 2...";
             level++;
@@ -121,9 +110,9 @@ public class pacmanController : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("ghost"))
+        if(collision.gameObject.CompareTag("ghost"))
         {
-            if (ghostbuster == true)
+            if(ghostbuster == true)
             {
                 count += 100;
                 ghostController ghost = collision.gameObject.GetComponent<ghostController>();
@@ -136,22 +125,6 @@ public class pacmanController : MonoBehaviour
                 collision.gameObject.SetActive(false);
                 SetScore();
             }
-            if (count < 0)
-            {
-                winText.text = "Game Over";
-                StartCoroutine(Waiting());
-            }
-            if (level == 1 && count >= 250)
-            {
-                winText.text = "Level 1 complete! Proceed to level 2...";
-                level++;
-                StartCoroutine(Waiting());
-            }
-            if (level == 2 && count > 350)
-            {
-                winText.text = "Level 2 complete! Proceed to level 2...";
-                level++;
-            }
         }
         //rotate the cube world
         if (collision.collider.CompareTag("up"))
@@ -162,12 +135,23 @@ public class pacmanController : MonoBehaviour
         {
             Physics.gravity = new Vector3(0, 10, 0);
         }
-    }
-    IEnumerator Waiting()
-    {
-        speed = 0;
-        yield return new WaitForSeconds(5);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        /*if (collision.collider.CompareTag("left"))
+        {
+            Physics.gravity = new Vector3(10, 0, 0);
+        }
+        if (collision.collider.CompareTag("right"))
+        {
+            Physics.gravity = new Vector3(-10, 0, 0);
+        }
+        if (collision.collider.CompareTag("back"))
+        {
+            Physics.gravity = new Vector3(0, 0, -10);
+        }
+        if (collision.collider.CompareTag("front"))
+        {
+            Physics.gravity = new Vector3(0, 0, 10);
+        }*/
+
     }
 
     void SetScore()
@@ -176,16 +160,6 @@ public class pacmanController : MonoBehaviour
     }
     void SetCountDown()
     {
-        if(countdown>0)
-        {
-            if(countdown%5 ==0)
-            {
-                cd.text = "Countdown: " + (countdown/5).ToString();
-            }
-        }
-        else
-        {
-            cd.text = "";
-        }
+        cd.text = "Countdown: " + countdown.ToString();
     }
 }
