@@ -18,6 +18,8 @@ public class pacmanController : MonoBehaviour
     private int count;
     public GameObject titlescreen;
     private int timer;
+    public GameObject cam;
+    public Vector3 offset;
 
     // Use this for initialization
     void Start()
@@ -31,6 +33,8 @@ public class pacmanController : MonoBehaviour
         countdown = 0;
         count = 0;
         SetScore();
+        offset = cam.transform.position - transform.position;
+        cam.transform.position = transform.position;
     }
     private void Awake()
     {
@@ -42,15 +46,12 @@ public class pacmanController : MonoBehaviour
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
-        //flip control based on gravitational pull
-        if(Physics.gravity.y > 0)
-        {
-            moveHorizontal = -Input.GetAxis("Horizontal");
-        }
-
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-
-        rb.AddForce(movement * speed);
+        offset = Quaternion.AngleAxis(Input.GetAxis("Horizontal") * 4.0f, Vector3.up) * offset;
+        cam.transform.position = transform.position + offset;
+        cam.transform.LookAt(transform.position);
+        var camDir = cam.transform.TransformDirection(movement);
+        rb.AddForce(camDir * speed);
     }
     void Update()
     {
