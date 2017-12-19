@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.Windows.Speech;
 using System.Linq;
 
 public class pacmanController : MonoBehaviour
 {
-    KeywordRecognizer keywordRecognizer;
-    Dictionary<string, System.Action> keywords = new Dictionary<string, System.Action>();
     public int speed;
     private bool ghostbuster;
     private int countdown;
@@ -25,25 +22,6 @@ public class pacmanController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        keywords.Add("up", ()=>
-        {
-            rb.transform.position += Vector3.up;
-        });
-        keywords.Add("down", () =>
-        {
-            rb.transform.position += Vector3.down;
-        });
-        keywords.Add("left", () =>
-        {
-            rb.transform.position += Vector3.left;
-        });
-        keywords.Add("right", () =>
-        {
-            rb.transform.position += Vector3.right;
-        });
-        keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
-        keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
-        keywordRecognizer.Start();
         timer = 100;
         ghostbuster = false;
         level = 1;
@@ -222,14 +200,5 @@ public class pacmanController : MonoBehaviour
     void SetCountDown()
     {
         cd.text = "Countdown: " + countdown.ToString();
-    }
-    private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
-    {
-        System.Action keywordAction;
-        // if the keyword recognized is in our dictionary, call that Action.
-        if (keywords.TryGetValue(args.text, out keywordAction))
-        {
-            keywordAction.Invoke();
-        }
     }
 }
