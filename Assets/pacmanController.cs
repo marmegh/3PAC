@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class pacmanController : MonoBehaviour
 {
@@ -157,9 +158,20 @@ public class pacmanController : MonoBehaviour
     void SetScore()
     {
         score.text = "Score: " + count.ToString();
+        if(count < 0)
+        {
+            winText.text = "Game Over";
+            StartCoroutine(Waiting());
+        }
     }
     void SetCountDown()
     {
         cd.text = "Countdown: " + countdown.ToString();
+    }
+    IEnumerator Waiting()
+    {
+        speed = 0;
+        yield return new WaitForSeconds(5);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
